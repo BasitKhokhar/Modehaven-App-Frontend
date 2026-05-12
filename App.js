@@ -1,0 +1,510 @@
+
+import AppContainer from "./src/AppContainer";
+import React, { useState, useEffect, useContext } from "react";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from "@expo/vector-icons/MaterialIcons";
+import { LinearGradient } from "expo-linear-gradient";
+import * as SecureStore from "expo-secure-store";
+
+// Screens
+import SignupScreen from "./Components/Authentication/Signup";
+import LoginScreen from "./Components/Authentication/Login";
+import AllNotifications from "./src/Screens/SplashScreens/AllNotifications";
+import HomeScreen from "./Components/Home";
+import ProductsScreen from "./Components/Products/ProductsScreen";
+import CartScreen from "./Components/Cart/CartScreen";
+import CheckoutScreen from "./Components/Cart/CheckoutScreen";
+import AddressScreen from "./Components/Cart/AddressScreen";
+import Categories from "./Components/Categories/Categories";
+import Subcategories from "./Components/Categories/Subcategories";
+import Products from "./Components/Categories/Products";
+import SearchScreen from "./Components/Products/SearchScreen";
+import SplashScreen from "./Components/SplashScreens/SplashScreen";
+import SplashScreen1 from "./Components/SplashScreens/SplashScreen1";
+import SplashScreen2 from "./Components/SplashScreens/SplashScreen2";
+import SplashScreen3 from "./Components/SplashScreens/SplashScreen3";
+import SplashScreen4 from "./Components/SplashScreens/SplashScreen4";
+import SplashScreen5 from "./Components/SplashScreens/SplashScreen5";
+
+
+import ServiceBookingForm from "./Components/Services/ServiceBookingForm";
+import UserDetailsScreen from "./Components/Cart/UserDetailsScreen";
+import UserScreen from "./Components/User/UserScreen";
+import AccountDetailScreen from "./Components/User/AccountDetailScreen";
+import CustomerSupportScreen from "./Components/User/CustomerSupportScreen";
+import FAQ from "./Components/User/FAQ";
+import Services from "./Components/Services/Services";
+import About from "./Components/User/About";
+import StripePayment from "./Components/Cart/StripePayment";
+import LogoutScreen from "./Components/User/LogoutScreen";
+
+import Constants from "expo-constants";
+const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
+const stripeKey = Constants.expoConfig.extra.stripePublishableKey;
+
+import { colors } from "./Components/Themes/colors";
+import { CartContext } from "./src/ContextApis/cartContext";
+import { CartProvider } from "./src/ContextApis/cartContext";
+import { NotificationProvider } from "./src/ContextApis/NotificationsContext";
+import { useNotification } from "./src/ContextApis/NotificationsContext";
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+// ------------------ Main Layout ------------------
+const MainLayout = ({ navigation, children, currentScreen }) => {
+  const { cartCount, fetchCartCount } = useContext(CartContext);
+  const { unreadCount } = useNotification();
+  console.log("cart count in app.js", cartCount)
+  // Fetch cart count whenever this layout mounts or becomes active
+  useEffect(() => {
+    fetchCartCount();
+  }, []);
+  return (
+    <View style={[styles.container, { backgroundColor: colors.bodybackground }]}>
+      <View style={[styles.header, { backgroundColor: colors.headerbg }]}>
+        <View style={styles.logoWrapper}>
+          <Image
+            source={require("./assets/logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+        <View style={styles.headerRight}>
+          {/* Search bar */}
+          <TouchableOpacity
+            style={[styles.searchBar, { backgroundColor: colors.white }]}
+            onPress={() => navigation.navigate("SearchScreen")}
+          >
+            <Text style={[styles.searchText, { color: colors.mutedText }]}>Search...</Text>
+            <Icon name="search" size={20} color={colors.mutedText} style={styles.searchIcon} />
+          </TouchableOpacity>
+
+          {/* Notification */}
+          <TouchableOpacity
+            style={[styles.circularButton, { position: "relative", }]}
+            onPress={() => navigation.navigate("allNotifications")}
+          >
+            <LinearGradient
+              colors={colors.gradients.mintGlow}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.circularGradient}
+            >
+              <Icon name="notifications" size={22} color="#fff" />
+              {unreadCount > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: -2,
+                    top: -2,
+                    backgroundColor: "red",
+                    borderRadius: 8,
+                    width: 16,
+                    height: 16,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    zIndex: 999
+                  }}
+                >
+                  <Text style={{ color: "white", fontSize: 10 }}>{unreadCount}</Text>
+                </View>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+
+      <View style={styles.body}>{children}</View>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        {[
+          { name: "Home", icon: "home" },
+          { name: "Products", icon: "shopping-bag" },
+          { name: "Cart", icon: "shopping-cart" },
+          { name: "Services", icon: "build" },
+          { name: "Profile", icon: "person" },
+        ].map(({ name, icon }) => {
+          const isActive = currentScreen === name;
+          return (
+            <TouchableOpacity
+              key={name}
+              style={styles.footerButton}
+              onPress={() => navigation.navigate(name)}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={isActive ? colors.gradients.mintGlow : [colors.secondary, colors.secondary]}
+                style={[styles.iconWrapper, isActive && styles.activeIconWrapper]}
+              >
+                <Icon
+                  name={icon}
+                  size={20}
+                  color={isActive ? colors.text : colors.mutedText}
+                />
+              </LinearGradient>
+              <Text style={[styles.footerText, isActive && styles.activeText]}>
+                {name}
+              </Text>
+
+              {/* Cart Badge */}
+              {name === "Cart" && cartCount > 0 && (
+                <View style={[styles.cartBadge, { backgroundColor: colors.error }]}>
+                  <Text style={styles.cartCount}>{cartCount}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+};
+
+// ------------------ Bottom Tabs ------------------
+const BottomTabs = () => {
+  return (
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={{ headerShown: false, tabBarStyle: { display: "none" } }}
+    >
+      <Tab.Screen name="Home">
+        {({ navigation }) => (
+          <MainLayout navigation={navigation} currentScreen="Home">
+            <HomeScreen />
+          </MainLayout>
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="Products">
+        {({ navigation }) => (
+          <MainLayout navigation={navigation} currentScreen="Products">
+            <ProductsScreen />
+          </MainLayout>
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="Cart">
+        {({ navigation }) => (
+          <MainLayout navigation={navigation} currentScreen="Cart">
+            <CartScreen />
+          </MainLayout>
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="Services">
+        {({ navigation }) => (
+          <MainLayout navigation={navigation} currentScreen="Services">
+            <Services />
+          </MainLayout>
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="Profile">
+        {({ navigation }) => (
+          <MainLayout navigation={navigation} currentScreen="Profile">
+            <UserScreen />
+          </MainLayout>
+        )}
+      </Tab.Screen>
+    </Tab.Navigator>
+  );
+};
+
+
+export const commonHeaderOptions = {
+  headerStyle: {
+    backgroundColor:colors.headerbg, borderBottomWidth: 1, borderColor: colors.border
+  },
+  headerTintColor: colors.white,
+  headerTitleStyle: {
+    fontWeight: "bold",
+  },
+};
+
+// ------------------ App ------------------
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [checkingLogin, setCheckingLogin] = useState(true);
+  const [isSplash1Visible, setIsSplash1Visible] = useState(true);
+  const [isSplash2Visible, setIsSplash2Visible] = useState(null);
+  const [isSplash3Visible, setIsSplash3Visible] = useState(null);
+  const [isSplash4Visible, setIsSplash4Visible] = useState(null);
+  const [isSplash5Visible, setIsSplash5Visible] = useState(null);
+
+  // ✅ Check for valid token only
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        const token = await SecureStore.getItemAsync("refreshToken");
+
+        if (token) {
+          // Optionally: call API to validate token
+          setIsLoggedIn(true);
+          setIsSplash2Visible(false);
+          setIsSplash3Visible(false);
+          setIsSplash4Visible(false);
+          setIsSplash5Visible(false);
+        } else {
+          setIsLoggedIn(false);
+          setIsSplash2Visible(true);
+          setIsSplash3Visible(false);
+          setIsSplash4Visible(false);
+          setIsSplash5Visible(false);
+        }
+      } catch (error) {
+        console.error("Error checking login:", error);
+        setIsLoggedIn(false);
+      } finally {
+        setCheckingLogin(false);
+      }
+    };
+
+    checkLogin();
+  }, []);
+
+  // Splash screen flow
+  useEffect(() => {
+    const splashFlow = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      setIsSplash1Visible(false);
+    };
+    splashFlow();
+  }, []);
+
+// ✅ Splash screens handling (WRAPPED IN AppContainer)
+
+if (isSplash1Visible)
+  return (
+    <AppContainer backgroundColor="#DC143C">
+      <SplashScreen1 />
+    </AppContainer>
+  );
+
+if (isSplash2Visible)
+  return (
+    <AppContainer backgroundColor="#FFF5F5">
+      <SplashScreen2
+        onNext={() => {
+          setIsSplash2Visible(false);
+          setIsSplash3Visible(true);
+        }}
+      />
+    </AppContainer>
+  );
+
+if (isSplash3Visible)
+  return (
+    <AppContainer backgroundColor="#FFF5F5">
+      <SplashScreen3
+        onNext={() => {
+          setIsSplash3Visible(false);
+          setIsSplash4Visible(true);
+        }}
+      />
+    </AppContainer>
+  );
+
+if (isSplash4Visible)
+  return (
+    <AppContainer backgroundColor="#FFF5F5">
+      <SplashScreen4
+        onNext={() => {
+          setIsSplash4Visible(false);
+          setIsSplash5Visible(true);
+        }}
+      />
+    </AppContainer>
+  );
+
+if (isSplash5Visible)
+  return (
+    <AppContainer backgroundColor="#FFF5F5">
+      <SplashScreen5 onNext={() => setIsSplash5Visible(false)} />
+    </AppContainer>
+  );
+
+if (checkingLogin)
+  return (
+    <AppContainer backgroundColor="#1A1A1A">
+      <SplashScreen />
+    </AppContainer>
+  );
+
+
+  return (
+    <AppContainer backgroundColor="#1A1A1A">
+      <StripeProvider publishableKey={stripeKey} merchantDisplayName="Basit Sanitary App">
+        <NotificationProvider>
+          <CartProvider>
+            <NavigationContainer>
+              <Stack.Navigator initialRouteName={isLoggedIn ? "Main" : "Login"}>
+                <Stack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Login" options={{ headerShown: false }}>
+                  {(props) => <LoginScreen {...props}  />}
+                </Stack.Screen>
+                <Stack.Screen name="Main" options={{ headerShown: false }}>
+                  {(props) => <BottomTabs {...props} />}
+                </Stack.Screen>
+
+                {/* Other Screens */}
+                <Stack.Screen name="allNotifications" component={AllNotifications} options={{ title: "All Notifications", ...commonHeaderOptions, }} />
+                <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ title: "Checkout", ...commonHeaderOptions, }} />
+                <Stack.Screen name="AddressScreen" component={AddressScreen} />
+                {/* <Stack.Screen name="PaymentScreen" component={PaymentScreen} options={{ title: "Payment Methods", ...commonHeaderOptions, }} /> */}
+                <Stack.Screen name="Profile" component={UserScreen} options={{ title: "Profile" }} />
+                <Stack.Screen name="Categories" component={Categories} />
+                <Stack.Screen name="Subcategories" component={Subcategories} options={{ title: "SubCategories", ...commonHeaderOptions, }} />
+                <Stack.Screen name="Products" component={Products} options={{ title: "Products", ...commonHeaderOptions, }} />
+                <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ title: "Search Products", ...commonHeaderOptions, }} />
+                <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} options={{ title: "Confirm Order", ...commonHeaderOptions, }} />
+                <Stack.Screen name="bookplumber" component={ServiceBookingForm} options={{ title: "Book Plumber", ...commonHeaderOptions, }} />
+                <Stack.Screen name="User" component={UserScreen} />
+                <Stack.Screen name="AccountDetail" component={AccountDetailScreen} options={{ title: "Profile Update", ...commonHeaderOptions, }} />
+                <Stack.Screen name="CustomerSupport" component={CustomerSupportScreen} options={{ title: "Customer Support", ...commonHeaderOptions, }} />
+                <Stack.Screen name="faq" component={FAQ} options={{ title: "FAQs", ...commonHeaderOptions, }} />
+                <Stack.Screen name="about" component={About} options={{ title: "About Us", ...commonHeaderOptions, }} />
+                <Stack.Screen name="StripePayment" component={StripePayment} options={{ title: "Card Payment", ...commonHeaderOptions, }} />
+                <Stack.Screen name="Logout" component={LogoutScreen} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </CartProvider>
+        </NotificationProvider>
+      </StripeProvider>
+    </AppContainer>
+  );
+};
+
+export default App;
+// ------------------ Styles ------------------
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  header: {
+    paddingTop: 35,
+    paddingBottom: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+
+  },
+
+  logoWrapper: {
+    flex: 1,              // take 50% width
+    justifyContent: "flex-start",
+  },
+
+  headerRight: {
+    flex: 1,              // take 50% width
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: 12, paddingRight: 6
+  },
+  logo: { width: 100, height: 40, resizeMode: "contain" },
+  circularButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 24,
+    // overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.6,
+    shadowRadius: 6,
+  },
+
+  // 🌈 Gradient background (for PRO + Notification)
+  circularGradient: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // 💎 PRO text styling
+  proText: {
+    color: colors.text,
+    fontWeight: "800",
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textShadowColor: colors.primary,
+    textShadowRadius: 4,
+  },
+
+
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    height: 35,
+    width: "70%",
+  },
+  searchText: { flex: 1, fontSize: 14 },
+  searchIcon: { marginLeft: 5 },
+  body: { flex: 1, padding: 0 },
+
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    position: "absolute",
+    bottom: 20,
+    left: 10,
+    right: 10,
+    borderRadius: 35,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
+    backgroundColor: colors.headerbg,
+  },
+
+  footerButton: { alignItems: "center", flex: 1 },
+
+  iconWrapper: {
+    width: 45,
+    height: 45,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.secondary,
+    marginBottom: 5,
+  },
+  activeIconWrapper: {
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+
+  footerText: { fontSize: 12, color: colors.mutedText, fontWeight: "600" },
+  activeText: { color: colors.white, fontWeight: "700" },
+
+  cartBadge: {
+    position: "absolute",
+    top: -0,
+    right: -0,
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cartCount: {
+    color: colors.white,
+    fontSize: 10,
+    fontWeight: "700",
+  },
+});
+
