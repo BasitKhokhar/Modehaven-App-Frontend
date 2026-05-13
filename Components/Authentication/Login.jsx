@@ -57,35 +57,18 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const handleLogin = async () => {
-    if (!validateInputs()) return;
-
+    // Static build: Bypass authentication and navigate directly
     try {
-      const res = await apiFetch(`/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      // Set mock session data
+      await SecureStore.setItemAsync("accessToken", "static_mock_token");
+      await SecureStore.setItemAsync("refreshToken", "static_mock_refresh_token");
+      await AsyncStorage.setItem("userId", "1");
+      await AsyncStorage.setItem("email", email || "fashion.lover@modeheaven.com");
 
-      const data = await res.json();
-
-      // Check if login successful
-      if (data.userId && data.email && data.accessToken) {
-        // Store tokens securely
-        await SecureStore.setItemAsync("accessToken", data.accessToken);
-        await SecureStore.setItemAsync("refreshToken", data.refreshToken);
-
-        // Store user info
-        await AsyncStorage.setItem("userId", data.userId.toString());
-        await AsyncStorage.setItem("email", data.email);
-
-        // Navigate to your home or splash screen
-        navigation.replace("SplashScreen");
-      } else {
-        Alert.alert("Error", "Invalid credentials");
-      }
+      navigation.replace("SplashScreen");
     } catch (err) {
-      Alert.alert("Error", "Login failed");
-      console.error("Login error:", err);
+      console.error("Mock login error:", err);
+      navigation.replace("SplashScreen");
     }
   };
 

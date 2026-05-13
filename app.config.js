@@ -12,11 +12,11 @@ export default () => ({
     owner: "basitkhokhar4949",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/icon2.png",
+    icon: "./assets/icons.jpeg",
     userInterfaceStyle: "light",
 
     splash: {
-      image: "./assets/icons.png",
+      image: "./assets/icons.jpeg",
       resizeMode: "contain",
       backgroundColor: "#ffffff"
     },
@@ -26,12 +26,12 @@ export default () => ({
     android: {
       package: "com.modeheaven.app",
       adaptiveIcon: {
-        foregroundImage: "./assets/iconss.png"
+        foregroundImage: "./assets/icons.jpeg"
       }
     },
 
     web: {
-      favicon: "./assets/icon2.png"
+      favicon: "./assets/icons.jpeg"
     },
 
     plugins: [

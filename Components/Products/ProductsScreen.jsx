@@ -15,9 +15,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DropDownPicker from "react-native-dropdown-picker";
 import ProductModal from "./ProductModal";
 import Loader from "../Loader/Loader";
-import { apiFetch } from "../../src/apiFetch";
 import { colors } from "../Themes/colors";
 import { MotiView } from "moti";
+import staticData from "../../src/data.json";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 45) / 2;
@@ -61,22 +61,25 @@ const ProductsScreen = () => {
         if (pageNum === 1) setLoading(true);
         else setLoadingMore(true);
 
-        const res = await apiFetch(`/products/allproducts?page=${pageNum}&limit=${PAGE_SIZE}`);
-        if (!res.ok) throw new Error("Failed to fetch products");
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-        const data = await res.json();
-        let fetchedProducts = data.products || [];
-
+        let allItems = staticData.allProducts || [];
+        
         // Sorting
-        if (sortOrder === "az") fetchedProducts.sort((a, b) => a.name.localeCompare(b.name));
-        else if (sortOrder === "za") fetchedProducts.sort((a, b) => b.name.localeCompare(a.name));
-        else if (sortOrder === "priceLowHigh") fetchedProducts.sort((a, b) => a.price - b.price);
-        else if (sortOrder === "priceHighLow") fetchedProducts.sort((a, b) => b.price - a.price);
+        if (sortOrder === "az") allItems.sort((a, b) => a.name.localeCompare(b.name));
+        else if (sortOrder === "za") allItems.sort((a, b) => b.name.localeCompare(a.name));
+        else if (sortOrder === "priceLowHigh") allItems.sort((a, b) => a.price - b.price);
+        else if (sortOrder === "priceHighLow") allItems.sort((a, b) => b.price - a.price);
 
-        if (pageNum === 1) setProducts(fetchedProducts);
-        else setProducts((prev) => [...prev, ...fetchedProducts]);
+        const start = (pageNum - 1) * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+        const pagedItems = allItems.slice(start, end);
 
-        setHasMore(data.hasMore);
+        if (pageNum === 1) setProducts(pagedItems);
+        else setProducts((prev) => [...prev, ...pagedItems]);
+
+        setHasMore(end < allItems.length);
         setPage(pageNum);
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -105,24 +108,12 @@ const ProductsScreen = () => {
 
   const openProductModal = (product) => setSelectedProduct(product);
 
-  const renderSkeleton = () => (
-    <MotiView
-      from={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ type: "timing", duration: 400 }}
-      style={[styles.productCard, { height: 180, justifyContent: "center", alignItems: "center" }]}
-    >
-      <Loader />
-    </MotiView>
-  );
-
   const renderItem = ({ item }) => (
     <View style={[styles.productCard, { backgroundColor: colors.cardsbackground }]}>
-      <Image source={{ uri: item.image_url }} style={styles.productImage} />
+      <Image source={{ uri: item.image }} style={styles.productImage} />
       <Text style={[styles.productName, { color: colors.text }]}>{item.name}</Text>
       <Text style={[styles.productStock, { color: colors.mutedText }]}>Stock: {item.stock}</Text>
-      <Text style={[styles.productPrice, { color: colors.primary }]}>Price: {Math.floor(item.price)}</Text>
+      <Text style={[styles.productPrice, { color: colors.primary }]}>Price: ${Math.floor(item.price)}</Text>
       <TouchableOpacity
         onPress={() => openProductModal(item)}
         style={[styles.shopNowButton, { backgroundColor: colors.text }]}

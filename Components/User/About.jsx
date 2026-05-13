@@ -7,91 +7,47 @@ import Loader from '../Loader/Loader';
 import Constants from 'expo-constants';
 const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
 export default function About() {
-     const navigation = useNavigation();
-  const [aboutData, setAboutData] = useState({
-    aboutMsgsData: [],
-    aboutImageData: [],
-    aboutUsData: [],
-    aboutMissionData: [],
-  });
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    const apiEndpoints = [
-      { key: 'aboutMsgsData', url: `${API_BASE_URL}/about` },
-      { key: 'aboutImageData', url: `${API_BASE_URL}/about_image` },
-      { key: 'aboutUsData', url: `${API_BASE_URL}/aboutus` },
-      { key: 'aboutMissionData', url: `${API_BASE_URL}/about_mission` }
-    ];
-
-    Promise.all(
-      apiEndpoints.map(endpoint =>
-        fetch(endpoint.url)
-          .then(response => response.json())
-          .then(data => ({ key: endpoint.key, data }))
-          .catch(() => ({ key: endpoint.key, data: [] }))
-      )
-    ).then(results => {
-      const updatedData = results.reduce((acc, result) => {
-        acc[result.key] = result.data;
-        return acc;
-      }, {});
-      setAboutData(prevData => ({ ...prevData, ...updatedData }));
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) {
-    return <View style={styles.loaderContainer}>
-      <Loader />
-    </View>
-  }
+  const aboutUsText = "Mode Haven is your ultimate destination for premium quality shirts and fashion accessories. Founded with a passion for style and elegance, we bring you a curated collection that combines classic designs with modern trends.";
+  const missionText = "Our mission is to empower individuals to express their unique personality through high-quality, comfortable, and stylish clothing. We envision a world where every person feels confident and sophisticated in what they wear.";
 
   return (
     <ScrollView style={styles.container}>
-      <Animatable.Text animation="fadeInUp" style={styles.title}>About Us</Animatable.Text>
+      <Animatable.Text animation="fadeInUp" style={styles.title}>About Mode Haven</Animatable.Text>
 
       {/* About Us Section */}
       <View style={styles.section}>
         <Animatable.View animation="zoomIn" style={styles.imageContainer}>
-          {aboutData.aboutImageData.map(item => (
-            <Image key={item.id} source={{ uri: item.image_url }} style={styles.image} />
-          ))}
+          <Image source={{ uri: "https://images.unsplash.com/photo-1441984908796-9039b052e98b?q=80&w=1470&auto=format&fit=crop" }} style={styles.image} />
         </Animatable.View>
 
         <Animatable.View animation="fadeInUp" style={styles.textContainer}>
-          {aboutData.aboutUsData.map(items => (
-            <Text key={items.id} style={styles.text}>{items.about_us}</Text>
-          ))}
+          <Text style={styles.text}>{aboutUsText}</Text>
         </Animatable.View>
       </View>
 
       {/* Mission & Vision Section */}
       <Text style={styles.sectionTitle}>Mission & Vision</Text>
       <View style={styles.section}>
-        {aboutData.aboutMissionData.map(items => (
-          <Animatable.View key={items.id} animation="zoomIn" style={styles.missionContainer}>
-            <Text style={styles.missionText}>{items.aboutmission}</Text>
-          </Animatable.View>
-        ))}
+        <Animatable.View animation="zoomIn" style={styles.missionContainer}>
+          <Text style={styles.missionText}>{missionText}</Text>
+        </Animatable.View>
       </View>
 
-      {/* Owners List */}
-      {aboutData.aboutMsgsData.map(items => (
-        <View key={items.id} style={styles.ownerContainer}>
-          <Animatable.Text animation="fadeInUp" style={styles.position}>{items.Position}</Animatable.Text>
-          <View style={styles.ownerDetails}>
-            <Animatable.Image animation="zoomIn" source={{ uri: items.image_url }} style={styles.ownerImage} />
-            <View>
-              <Text style={styles.ownerName}>{items.name}</Text>
-              <Text style={styles.text}>{items.description}</Text>
-              <Text style={styles.contact}><Text style={styles.bold}>Contact:</Text> {items.contact}</Text>
-            </View>
+      {/* Team Section */}
+      <View style={styles.ownerContainer}>
+        <Animatable.Text animation="fadeInUp" style={styles.position}>Founder & Lead Designer</Animatable.Text>
+        <View style={styles.ownerDetails}>
+          <Animatable.Image animation="zoomIn" source={{ uri: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1470&auto=format&fit=crop" }} style={styles.ownerImage} />
+          <View>
+            <Text style={styles.ownerName}>Alex Mode</Text>
+            <Text style={styles.text}>With over 15 years in the fashion industry, Alex founded Mode Haven to redefine casual and formal wear.</Text>
+            <Text style={styles.contact}><Text style={styles.bold}>Contact:</Text> hello@modehaven.com</Text>
           </View>
         </View>
-      ))}
+      </View>
     </ScrollView>
   );
 }

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import * as Animatable from "react-native-animatable";
-import {colors} from "../Themes/colors";
+import { colors } from "../Themes/colors";
 
 const SplashScreen = ({ navigation }) => {
-  const fullText = "Welcome to Basit Sanitary App";
+  const fullText = "Welcome to Mode Heaven - Your one stop destination for quality and style";
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {

@@ -13,7 +13,7 @@ const SplashScreen5 = ({ onNext }) => {
       {/* Top Image with gradient overlay */}
       <View style={styles.topContainer}>
         <ImageBackground
-          source={require("../../assets/splash4.jpg")}
+          source={{ uri: "https://images.unsplash.com/photo-1594932224010-75f430d82943?q=80&w=1480&auto=format&fit=crop" }}
           style={styles.image}
         >
           <LinearGradient
@@ -21,7 +21,7 @@ const SplashScreen5 = ({ onNext }) => {
             style={styles.overlay}
           >
             <Text style={styles.title}>
-              ✨ Join Us for a Better Sanitary Experience!
+              ✨ Join Us for a Better Fashion Experience!
             </Text>
           </LinearGradient>
         </ImageBackground>
@@ -30,7 +30,7 @@ const SplashScreen5 = ({ onNext }) => {
       {/* Content */}
       <View style={styles.contentContainer}>
         <Text style={styles.description}>
-          Create an account to explore our wide range of high-quality sanitary products. 
+          Create an account to explore our wide range of high-quality premium shirts and accessories. 
           Sign up now for an enhanced shopping experience!
         </Text>
 
