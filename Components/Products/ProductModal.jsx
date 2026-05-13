@@ -29,12 +29,38 @@ const ProductModal = ({ product, onClose, userId }) => {
   const [confirmationMessage, setConfirmationMessage] = useState("");
 
   const handleAddToCart = async () => {
-    setConfirmationMessage("Product added to cart (Static Mode)");
-    setConfirmationVisible(true);
-    setTimeout(() => {
-      setConfirmationVisible(false);
-      onClose();
-    }, 1500);
+    const productWithOptions = {
+      ...product,
+      selectedColor: selectedColor || "None",
+      quantity: 1,
+      user_id: userId,
+    };
+
+    try {
+      const response = await apiFetch(`/cart/addtocart`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productWithOptions),
+      });
+     
+      const data = await response.json();
+   
+      if (response.ok) {
+        setConfirmationMessage(data.message || "Product added to cart");
+        setConfirmationVisible(true);
+        setTimeout(() => {
+          setConfirmationVisible(false);
+          onClose();
+        }, 2000);
+        
+      } 
+      else {
+        console.error("Failed to add product to cart");
+      }
+       fetchCartCount();
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -46,11 +72,11 @@ const ProductModal = ({ product, onClose, userId }) => {
               <FontAwesome name="times" size={24} color={colors.primary} />
             </TouchableOpacity>
 
-            <Image source={{ uri: product.image }} style={styles.productImage} />
+            <Image source={{ uri: product.image_url }} style={styles.productImage} />
             <Text style={[styles.productName, { color: colors.white }]}>{product.name}</Text>
             <Text style={[styles.productStock, { color: colors.mutedText }]}>Stock: {product.stock}</Text>
             <Text style={[styles.productPrice, { color: colors.primary }]}>
-              Price: ${Math.floor(product.price)}
+              Price: {Math.floor(product.price)}
             </Text>
 
             {/* Color Selection */}

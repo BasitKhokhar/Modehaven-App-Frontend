@@ -12,7 +12,7 @@ const SplashScreen3 = ({ onNext }) => {
       {/* Top Image with gradient overlay */}
       <View style={styles.topContainer}>
         <ImageBackground
-          source={{ uri: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=1470&auto=format&fit=crop" }}
+          source={require("../../assets/splash222.jpg")}
           style={styles.image}
         >
           {/* Updated Gradient Overlay to match dark header background */}
@@ -20,7 +20,7 @@ const SplashScreen3 = ({ onNext }) => {
             colors={["transparent", "rgba(0,0,0,0.70)", colors.headerbg]}
             style={styles.overlay}
           >
-            <Text style={styles.title}>👕 Explore Our Premium Shirt Collection</Text>
+            <Text style={styles.title}>🛁 Explore Our Premium Sanitary Products</Text>
           </LinearGradient>
         </ImageBackground>
       </View>
@@ -28,7 +28,7 @@ const SplashScreen3 = ({ onNext }) => {
       {/* Content */}
       <View style={styles.contentContainer}>
         <Text style={styles.description}>
-          Find the perfect fit from our wide range of casual, formal, and designer shirts. High-quality fabrics for every occasion.
+          Browse taps, showers, bathroom fittings, pipes, kitchen accessories, and much more — all from top trusted brands.
         </Text>
 
         {/* Neon Gradient Button */}

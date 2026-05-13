@@ -12,14 +12,14 @@ const SplashScreen4 = ({ onNext }) => {
       {/* Top Image with Gradient Overlay */}
       <View style={styles.topContainer}>
         <ImageBackground
-          source={{ uri: "https://images.unsplash.com/photo-1554568218-0f1715e72254?q=80&w=1374&auto=format&fit=crop" }}
+          source={require("../../assets/splash333.jpg")}
           style={styles.image}
         >
           <LinearGradient
             colors={["transparent", "rgba(0,0,0,0.70)", colors.headerbg]}
             style={styles.overlay}
           >
-            <Text style={styles.title}>👔 Expert Fashion Advice at Your Fingertips</Text>
+            <Text style={styles.title}>🔧 Expert Plumbing Services at Your Doorstep</Text>
           </LinearGradient>
         </ImageBackground>
       </View>
@@ -27,7 +27,7 @@ const SplashScreen4 = ({ onNext }) => {
       {/* Content Section */}
       <View style={styles.contentContainer}>
         <Text style={styles.description}>
-          Get styled by experts. Discover the best combinations for your shirts, trousers, and accessories. Fast delivery and trusted quality.
+          Book skilled plumbers for installations, repairs, and maintenance. Fast service, trusted experts, and guaranteed quality work.
         </Text>
 
         <TouchableOpacity

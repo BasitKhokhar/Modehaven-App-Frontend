@@ -118,7 +118,7 @@ const OnSaleProducts = ({ products }) => {
                 <View style={styles.cardheader}>
                   {!imageFailed ? (
                     <Image
-                      source={{ uri: item.image }}
+                      source={{ uri: item.image_url }}
                       style={[styles.productImage, { borderColor: colors.border }]}
                       onError={() =>
                         setImageErrors((prev) => ({ ...prev, [item.id]: true }))
@@ -144,13 +144,11 @@ const OnSaleProducts = ({ products }) => {
                     <Text style={[styles.productStock, { color: colors.white }]}>
                       Stock: {item.stock}
                     </Text>
-                    {item.oldPrice && (
-                      <Text style={[styles.productPrice, { color: colors.error }]}>
-                        Before: ${item.oldPrice}
-                      </Text>
-                    )}
+                    <Text style={[styles.productPrice, { color: colors.error }]}>
+                      Before: {item.price}
+                    </Text>
                     <Text style={[styles.newProductPrice, { color: colors.white }]}>
-                      Now: ${item.price}
+                      Now: {item.new_price}
                     </Text>
                     <TouchableOpacity
                       style={[

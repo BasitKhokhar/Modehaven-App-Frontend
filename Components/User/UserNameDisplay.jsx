@@ -14,9 +14,24 @@ const UserNameDisplay = () => {
   const [userImage, setUserImage] = useState(null);
 
   useEffect(() => {
-    // Static user data for build
-    setUserName("Fashion Enthusiast");
-    setUserImage("https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1470&auto=format&fit=crop");
+    const fetchUserData = async () => {
+      try {
+        const response = await apiFetch(`/users/getuserdetails`);
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        const data = await response.json();
+        setUserName(data.name);
+
+        const imageResponse = await apiFetch(`/users/user_images`);
+        if (imageResponse.ok) {
+          const imageData = await imageResponse.json();
+          setUserImage(imageData.image_url);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching user:", error);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   return (
@@ -28,7 +43,7 @@ const UserNameDisplay = () => {
     >
       <View style={styles.header}>
         <Text style={styles.text}>
-          {userName ? `Welcome, ${userName}!` : "Welcome!"}
+          {userName ? `Welcome, ${userName}!` : "Loading..."}
         </Text>
         <View style={styles.imageContainer}>
           {userImage ? (
@@ -40,7 +55,7 @@ const UserNameDisplay = () => {
       </View>
 
       <Text style={styles.text1}>
-        Explore our exclusive collection of premium shirts and fashion accessories.
+        Explore a wide range of sanitary products and expert plumbing services.
       </Text>
 
       <View style={styles.dateTimeWrapper}>

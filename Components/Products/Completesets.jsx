@@ -304,7 +304,7 @@ const Completesets = ({ sets }) => {
                 <View style={styles.cardheader}>
                   {!imageFailed ? (
                     <Image
-                      source={{ uri: item.image }}
+                      source={{ uri: item.image_url }}
                       style={[styles.productImage, { borderColor: colors.border }]}
                       onError={() =>
                         setImageErrors((prev) => ({ ...prev, [item.id]: true }))
@@ -337,7 +337,7 @@ const Completesets = ({ sets }) => {
                     </Text>
 
                     <Text style={[styles.newProductPrice, { color: colors.white }]}>
-                      Price: {item.price ? `$${Math.floor(item.price)}` : "N/A"}
+                      Price: {item.price ? Math.floor(item.price) : "N/A"}
                     </Text>
 
                     <TouchableOpacity

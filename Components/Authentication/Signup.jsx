@@ -62,15 +62,33 @@ const SignupScreen = ({ navigation }) => {
   };
 
   const handleSignup = async () => {
-    // Static build: Bypass registration logic
-    setShowLoader(true);
-    
-    // Simulate short network delay
-    setTimeout(() => {
+    if (!validateInputs()) return;
+
+    try {
+      setShowLoader(true);
+      const response = await apiFetch(
+        `/auth/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password, phone }),
+        },
+        navigation
+      );
+
       setShowLoader(false);
-      showToastMessage("Signup successful! Redirecting...");
-      setTimeout(() => navigation.navigate("Login"), 1500);
-    }, 800);
+
+      if (response.ok) {
+        showToastMessage("Signup successful! Redirecting...");
+        setTimeout(() => navigation.navigate("Login"), 2000);
+      } else {
+        const data = await response.json();
+        showToastMessage(data.message || "Signup failed");
+      }
+    } catch (error) {
+      setShowLoader(false);
+      showToastMessage("Signup failed: " + error.message);
+    }
   };
 
   return (

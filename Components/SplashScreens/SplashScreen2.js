@@ -13,7 +13,7 @@ const SplashScreen2 = ({ onNext }) => {
       {/* Top Image with gradient overlay */}
       <View style={styles.topContainer}>
         <ImageBackground
-          source={{ uri: "https://images.unsplash.com/photo-1441984908796-9039b052e98b?q=80&w=1470&auto=format&fit=crop" }}
+          source={require("../../assets/splash1.jpg")}
           style={styles.image}
         >
           {/* Updated Gradient Overlay to match dark header background */}
@@ -21,7 +21,7 @@ const SplashScreen2 = ({ onNext }) => {
             colors={["transparent", "rgba(0,0,0,0.70)", colors.headerbg]}
             style={styles.overlay}
           >
-            <Text style={styles.title}>✨ Your Trusted Fashion Shopping Destination</Text>
+            <Text style={styles.title}>✨ Your Trusted Sanitary Shopping Destination</Text>
           </LinearGradient>
         </ImageBackground>
       </View>
@@ -29,7 +29,7 @@ const SplashScreen2 = ({ onNext }) => {
       {/* Content */}
       <View style={styles.contentContainer}>
         <Text style={styles.description}>
-          Discover premium shirts and modern fashion solutions — all in one easy-to-use shopping app.
+          Discover premium sanitary products and modern bathroom solutions — all in one easy-to-use shopping app.
         </Text>
 
         {/* Neon Gradient Button */}

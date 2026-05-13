@@ -135,7 +135,7 @@ const TrendingProducts = ({ products }) => {
             <LinearGradient colors={item.gradient} style={styles.cardBackground}>
               <View style={styles.imageContainer}>
                 <Image
-                  source={{ uri: item.image }}
+                  source={{ uri: item.image_url }}
                   style={[styles.image, { borderColor: colors.border }]}
                   resizeMode="stretch"
                   onError={() => console.warn("Failed to load image:", item.name)}
@@ -147,7 +147,7 @@ const TrendingProducts = ({ products }) => {
                   Stock: {item.stock}
                 </Text>
                 <Text style={[styles.price, { color: colors.white }]}>
-                  Price: ${Math.floor(item.price)}
+                  Price: {Math.floor(item.price)}
                 </Text>
                 <TouchableOpacity
                   style={[styles.button, { backgroundColor: colors.text, borderColor: colors.white }]}

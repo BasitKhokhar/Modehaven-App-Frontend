@@ -3,7 +3,7 @@ import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 import * as Animatable from "react-native-animatable";
 
-import splashLogo from "../../assets/icons.jpeg"; 
+import splashLogo from "../../assets/icons.png"; 
 const SplashScreen1 = () => {
   return (
     <View style={styles.container}>

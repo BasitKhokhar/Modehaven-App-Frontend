@@ -32,13 +32,13 @@ import SplashScreen4 from "./Components/SplashScreens/SplashScreen4";
 import SplashScreen5 from "./Components/SplashScreens/SplashScreen5";
 
 
-
+import ServiceBookingForm from "./Components/Services/ServiceBookingForm";
 import UserDetailsScreen from "./Components/Cart/UserDetailsScreen";
 import UserScreen from "./Components/User/UserScreen";
 import AccountDetailScreen from "./Components/User/AccountDetailScreen";
 import CustomerSupportScreen from "./Components/User/CustomerSupportScreen";
 import FAQ from "./Components/User/FAQ";
-
+import Services from "./Components/Services/Services";
 import About from "./Components/User/About";
 import StripePayment from "./Components/Cart/StripePayment";
 import LogoutScreen from "./Components/User/LogoutScreen";
@@ -69,7 +69,7 @@ const MainLayout = ({ navigation, children, currentScreen }) => {
       <View style={[styles.header, { backgroundColor: colors.headerbg }]}>
         <View style={styles.logoWrapper}>
           <Image
-            source={{ uri: "https://images.unsplash.com/photo-1541339907198-e08756dee03f?q=80&w=1470&auto=format&fit=crop" }}
+            source={require("./assets/logo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -128,6 +128,7 @@ const MainLayout = ({ navigation, children, currentScreen }) => {
           { name: "Home", icon: "home" },
           { name: "Products", icon: "shopping-bag" },
           { name: "Cart", icon: "shopping-cart" },
+          { name: "Services", icon: "build" },
           { name: "Profile", icon: "person" },
         ].map(({ name, icon }) => {
           const isActive = currentScreen === name;
@@ -194,7 +195,13 @@ const BottomTabs = () => {
           </MainLayout>
         )}
       </Tab.Screen>
-
+      <Tab.Screen name="Services">
+        {({ navigation }) => (
+          <MainLayout navigation={navigation} currentScreen="Services">
+            <Services />
+          </MainLayout>
+        )}
+      </Tab.Screen>
       <Tab.Screen name="Profile">
         {({ navigation }) => (
           <MainLayout navigation={navigation} currentScreen="Profile">
@@ -329,7 +336,7 @@ if (checkingLogin)
 
   return (
     <AppContainer backgroundColor="#1A1A1A">
-      <StripeProvider publishableKey={stripeKey} merchantDisplayName="Mode Haven Fashion Store">
+      <StripeProvider publishableKey={stripeKey} merchantDisplayName="Basit Sanitary App">
         <NotificationProvider>
           <CartProvider>
             <NavigationContainer>
@@ -354,7 +361,7 @@ if (checkingLogin)
                 <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ title: "Search Products", ...commonHeaderOptions, }} />
                 <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen} options={{ title: "Confirm Order", ...commonHeaderOptions, }} />
-
+                <Stack.Screen name="bookplumber" component={ServiceBookingForm} options={{ title: "Book Plumber", ...commonHeaderOptions, }} />
                 <Stack.Screen name="User" component={UserScreen} />
                 <Stack.Screen name="AccountDetail" component={AccountDetailScreen} options={{ title: "Profile Update", ...commonHeaderOptions, }} />
                 <Stack.Screen name="CustomerSupport" component={CustomerSupportScreen} options={{ title: "Customer Support", ...commonHeaderOptions, }} />
